@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Career Coach AI - 커리어 코칭</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .form-section {
+        padding: 40px;
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 1.1rem;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .skills-input {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .skill-tag {
+        background: #667eea;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+      }
+
+      .skill-tag button {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 1.2rem;
+        line-height: 1;
+      }
+
+      .submit-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        width: 100%;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .results {
+        display: none;
+        padding: 40px;
+        background: #f8f9fa;
+      }
+
+      .result-section {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .result-section h3 {
+        color: #667eea;
+        margin-bottom: 20px;
+        font-size: 1.3rem;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+      }
+
+      .question-item {
+        background: #f8f9fa;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+      }
+
+      .learning-path {
+        line-height: 1.6;
+        color: #333;
+      }
+
+      .error {
+        background: #fee;
+        color: #c33;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        border-left: 4px solid #c33;
+      }
+
+      .example-text {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🎯 Career Coach AI</h1>
+        <p>AI가 분석하는 맞춤형 커리어 코칭</p>
+      </div>
+
+      <div class="form-section">
+        <form id="careerForm">
+          <div class="form-group">
+            <label for="careerSummary">1. 경력 요약</label>
+            <input
+              type="text"
+              id="careerSummary"
+              placeholder="예: 3년차 백엔드 개발자"
+              required
+            />
+            <div class="example-text">
+              현재 경력 수준과 포지션을 간단히 설명해주세요
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="jobDuties">2. 수행 직무 및 프로젝트</label>
+            <textarea
+              id="jobDuties"
+              rows="3"
+              placeholder="예: Spring Boot 기반 커머스 서비스 개발 및 운영, AWS EC2 환경에서 서비스 배포"
+              required
+            ></textarea>
+            <div class="example-text">
+              담당했던 주요 프로젝트나 업무를 구체적으로 설명해주세요
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="technicalSkills">3. 보유 기술 스킬</label>
+            <input
+              type="text"
+              id="technicalSkills"
+              placeholder="예: Java, Spring Boot, Python, MSA, AWS"
+              required
+            />
+            <div class="example-text">
+              사용할 수 있는 기술들을 쉼표로 구분해서 입력해주세요
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            🚀 AI 코칭 받기
+          </button>
+        </form>
+
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>AI가 당신의 커리어를 분석하고 있습니다...</p>
+        </div>
+      </div>
+
+      <div class="results" id="results">
+        <div class="result-section">
+          <h3>🎯 맞춤형 면접 질문</h3>
+          <div id="interviewQuestions"></div>
+        </div>
+
+        <div class="result-section">
+          <h3>📚 개인화된 학습 경로</h3>
+          <div id="learningPath" class="learning-path"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById('careerForm')
+        .addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const submitBtn = document.getElementById('submitBtn');
+          const loading = document.getElementById('loading');
+          const results = document.getElementById('results');
+
+          // 폼 데이터 수집
+          const careerSummary = document.getElementById('careerSummary').value;
+          const jobDuties = document.getElementById('jobDuties').value;
+          const technicalSkills = document
+            .getElementById('technicalSkills')
+            .value.split(',')
+            .map((skill) => skill.trim())
+            .filter((skill) => skill.length > 0);
+
+          // 로딩 상태 표시
+          submitBtn.disabled = true;
+          loading.style.display = 'block';
+          results.style.display = 'none';
+
+          try {
+            const response = await fetch('/api/v1/coach/', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                careerSummary,
+                jobDuties,
+                technicalSkills,
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // 면접 질문 표시
+            const questionsContainer =
+              document.getElementById('interviewQuestions');
+            questionsContainer.innerHTML = data.interviewQuestions
+              .map(
+                (question, index) =>
+                  `<div class="question-item">
+                        <strong>Q${index + 1}.</strong> ${question}
+                    </div>`
+              )
+              .join('');
+
+            // 학습 경로 표시 (마크다운을 간단한 HTML로 변환)
+            const learningPathContainer =
+              document.getElementById('learningPath');
+            learningPathContainer.innerHTML = data.learningPath
+              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+              .replace(/\*(.*?)\*/g, '<em>$1</em>')
+              .replace(/#{1,6}\s+(.*)/g, '<h4>$1</h4>')
+              .replace(/\n/g, '<br>');
+
+            results.style.display = 'block';
+          } catch (error) {
+            console.error('Error:', error);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.innerHTML = `
+                    <strong>오류가 발생했습니다:</strong><br>
+                    ${error.message}<br>
+                    API 키와 서버 상태를 확인해주세요.
+                `;
+            results.innerHTML = '';
+            results.appendChild(errorDiv);
+            results.style.display = 'block';
+          } finally {
+            // 로딩 상태 해제
+            submitBtn.disabled = false;
+            loading.style.display = 'none';
+          }
+        });
+    </script>
+  </body>
+</html>
