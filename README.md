@@ -1,6 +1,7 @@
 ## Ai_Mission – Career Coach API
 
 생성형 AI(Google Gemini)를 활용해 이력서 정보를 입력하면 맞춤형 기술 면접 질문과 개인화 학습 경로를 제안하는 FastAPI 기반 백엔드 서비스입니다.
+<img width="832" height="721" alt="스크린샷 2025-08-20 오후 4 07 44" src="https://github.com/user-attachments/assets/a3d1077c-2594-4f6b-baae-04c6b49bb354" />
 
 ### 주요 기능
 
